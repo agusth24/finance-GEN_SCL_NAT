@@ -33,8 +33,9 @@ from pytorch_lightning import seed_everything
 from pytorch_lightning.callbacks.early_stopping import EarlyStopping
 from losses import SupConLoss
 
-from transformers import AdamW, T5ForConditionalGeneration, T5Tokenizer
+from transformers import AdamW, T5ForConditionalGeneration, T5Tokenizer, MT5ForConditionalGeneration, MT5Tokenizer, BartForConditionalGeneration, BartTokenizer, MBartForConditionalGeneration
 from transformers import get_linear_schedule_with_warmup
+from indobenchmark import IndoNLGTokenizer
 
 from data_utils import GenSCLNatDataset
 from data_utils import read_line_examples_from_file
@@ -113,8 +114,9 @@ def init_args():
         print(output_fold)
     else:
         # dump params as part of folder_path
+        model_name_or_path = args.model_name_or_path.replace('/','_')
         params = "I".join([elt for elts in params for elt in elts])
-        output_fold = "I".join([args.dataset, args.task,args.model_name_or_path, params, args.model_prefix])
+        output_fold = "I".join([args.dataset, args.task, model_name_or_path, params, args.model_prefix])
         #output_fold = "_".join([args.dataset, args.task, args.model_prefix, args.model_name_or_path])
         print(output_fold)
     output_dir = f"{args.output_folder}/{output_fold}"
@@ -148,9 +150,9 @@ class LinearModel(nn.Module):
     """
     def __init__(self, model_path):
         super().__init__()
-        if model_path == 't5-small':
+        if 'small' in model_path:
             self.layer_1 = nn.Linear(512, 1024)
-        elif model_path == 't5-base':
+        elif 'base' in model_path or model_path == 'indobenchmark/indobart-v2':
             self.layer_1 = nn.Linear(768, 1024)
         else:
             self.layer_1 = nn.Linear(1024, 1024)
@@ -436,13 +438,17 @@ if __name__ == '__main__':
     # initialization
     args = init_args()
     seed_everything(args.seed, workers=True)
-
-    tokenizer = T5Tokenizer.from_pretrained(args.model_name_or_path)
+    
+    if args.model_name_or_path == 'indobenchmark/indobart-v2':
+        tokenizer = IndoNLGTokenizer.from_pretrained(args.model_name_or_path)
+    elif 'mt5' in args.model_name_or_path:
+        tokenizer = MT5Tokenizer.from_pretrained(args.model_name_or_path)
+    elif 't5' in args.model_name_or_path:
+        tokenizer = T5Tokenizer.from_pretrained(args.model_name_or_path)
+    elif 'bart' in args.model_name_or_path:
+        tokenizer = BartTokenizer.from_pretrained(args.model_name_or_path)
     tokenizer.add_tokens(['[SSEP]'])
-
-
-
-
+    
     # Get example from the train set
     dataset = GenSCLNatDataset(tokenizer=tokenizer, data_dir=args.dataset, 
                         data_type='train', max_len=args.max_seq_length, task=args.task, truncate=args.truncate)
@@ -460,8 +466,16 @@ if __name__ == '__main__':
     if args.do_train:
         print("\n****** Conducting Training ******")
 
-        # initialize the T5 model
-        tfm_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
+        # initialize the T5 model            
+        if args.model_name_or_path == 'indobenchmark/indobart-v2':
+            tfm_model = MBartForConditionalGeneration.from_pretrained(args.model_name_or_path)
+        elif 'mt5' in args.model_name_or_path:
+            tfm_model = MT5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
+        elif 't5' in args.model_name_or_path:
+            tfm_model = T5ForConditionalGeneration.from_pretrained(args.model_name_or_path)
+        elif 'bart' in args.model_name_or_path:
+            tfm_model = BartForConditionalGeneration.from_pretrained(args.model_name_or_path)
+            
         tfm_model.resize_token_embeddings(len(tokenizer))
         # initialize characteristic-specific representation models
         cont_model = LinearModel(args.model_name_or_path)
@@ -525,8 +539,19 @@ if __name__ == '__main__':
         # initialize the T5 model from previous checkpoint
         model_path = args.model_name_or_path
         print(f"Loading trained model from {model_path}")
-        tokenizer = T5Tokenizer.from_pretrained(model_path)
-        tfm_model = T5ForConditionalGeneration.from_pretrained(model_path)
+        
+        if args.model_name_or_path == 'indobenchmark/indobart-v2':
+            tokenizer = IndoNLGTokenizer.from_pretrained(model_path)
+            tfm_model = MBartForConditionalGeneration.from_pretrained(model_path)
+        elif 'mt5' in args.model_name_or_path:
+            tokenizer = MT5Tokenizer.from_pretrained(model_path)
+            tfm_model = MT5ForConditionalGeneration.from_pretrained(model_path)
+        elif 't5' in args.model_name_or_path:
+            tokenizer = T5Tokenizer.from_pretrained(model_path)
+            tfm_model = T5ForConditionalGeneration.from_pretrained(model_path)
+        elif 'bart' in args.model_name_or_path:
+            tokenizer = BartTokenizer.from_pretrained(model_path)
+            tfm_model = BartrConditionalGeneration.from_pretrained(model_path) 
 
         # representations are only used during loss calculation
         cont_model = LinearModel(args.model_name_or_path)

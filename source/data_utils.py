@@ -176,10 +176,10 @@ class GenSCLNatDataset(ABSADataset):
 
         def get_sentiment_labels(labels_in):
             sentiment_dict = {
-                'negative': 0,
-                'neutral': 1,
-                'positive': 2,
-                'mixed': 3
+                'negatif': 0,
+                'netral': 1,
+                'positif': 2,
+                'campuran': 3
             }
             sentiment_labels = []
             for ex in labels_in:
@@ -187,7 +187,7 @@ class GenSCLNatDataset(ABSADataset):
                 if len(label) == 1:
                     label = sentiment_dict[label[0]]
                 else:
-                    label = sentiment_dict['mixed']
+                    label = sentiment_dict['campuran']
                 assert label in [0,1,2,3]
                 sentiment_labels.append(label)
             from collections import Counter

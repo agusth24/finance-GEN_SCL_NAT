@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
 
-sentiment_word_list = ['positive', 'negative', 'neutral']
-opinion2word = {'great': 'positive', 'bad': 'negative', 'ok': 'neutral'}
-opinion2word_under_o2m = {'good': 'positive', 'great': 'positive', 'best': 'positive',
-                          'bad': 'negative', 'okay': 'neutral', 'ok': 'neutral', 'average': 'neutral'}
+sentiment_word_list = ['positif', 'negatif', 'netral']
+opinion2word = {'hebat': 'positif', 'buruk': 'negatif', 'biasa': 'netral'}
+opinion2word_under_o2m = {'baik': 'positif', 'hebat': 'positif', 'terbaik': 'positif',
+                          'buruk': 'negatif', 'biasa': 'netral', 'ok': 'netral', 'rata-rata': 'netral'}
 
-numopinion2word = {'SP1': 'positive', 'SP2': 'negative', 'SP3': 'neutral'}
+numopinion2word = {'SP1': 'positif', 'SP2': 'negatif', 'SP3': 'netral'}
 import parse
 
 def extract_spans_para(task, seq, seq_type):
@@ -51,7 +51,7 @@ def extract_spans_para(task, seq, seq_type):
                         at = 'NULL'
                 except:
                     try:
-                        result = list(parse.parse('{0}| THE{1}IS{2}|{3}', s, case_sensitive=True))
+                        result = list(parse.parse('{0}| ASPEK{1}ADALAH{2}|{3}', s, case_sensitive=True))
                         ac, at, ot, sp = [elt.strip(' ') for elt in result]
                         if at.lower == 'it':
                             at = 'NULL'

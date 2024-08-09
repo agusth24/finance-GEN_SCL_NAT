@@ -5,18 +5,15 @@ mappings = load_mappings()
 
 use_the_gpu = False
 
-senttag2word = {'POS': 'positive', 'NEG': 'negative', 'NEU': 'neutral'}
-senttag2opinion = {'POS': 'great', 'NEG': 'bad', 'NEU': 'ok'}
-sentword2opinion = {'positive': 'great', 'negative': 'bad', 'neutral': 'ok'}
+senttag2word = {'POS': 'positif', 'NEG': 'negatif', 'NEU': 'netral'}
+senttag2opinion = {'POS': 'hebat', 'NEG': 'buruk', 'NEU': 'biasa'}
+sentword2opinion = {'positif': 'hebat', 'negatif': 'buruk', 'netral': 'biasa'}
 
 laptop_parent_mapping = mappings['laptop_parent_mapping']
 laptop_full_mapping = mappings['laptop_full_mapping']
 rest_full_mapping = mappings['restaurant_full_mapping']
 
-
-laptop_dict = {}
-for elt in laptop_parent_mapping:
-    laptop_dict[elt[1]] = elt[0]
+finance_parent_mapping = mappings['finance_parent_mapping']
 
 laptop_parent_dict = {}
 for elt in laptop_parent_mapping:
@@ -30,17 +27,22 @@ rest_full_dict = {}
 for elt in rest_full_mapping:
     rest_full_dict[elt[1]] = elt[0]
 
+finance_parent_dict = {}
+for elt in finance_parent_mapping:
+    finance_parent_dict[elt[1]] = elt[0]
 
 domain_map = {
     'restaurant': rest_full_dict,
     'laptop': laptop_full_dict,
-    'laptop_parent': laptop_parent_dict
+    'laptop_parent': laptop_parent_dict,
+    'finance_parent': finance_parent_dict
 }
 
 domain_map_inverted = {
     'restaurant': rest_full_mapping,
     'laptop': laptop_full_mapping,
-    'laptop_parent': laptop_parent_mapping
+    'laptop_parent': laptop_parent_mapping,
+    'finance_parent': finance_parent_mapping
 }
 
 def get_domain(label):
@@ -138,7 +140,7 @@ def get_gen_scl_nat_data(sents, labels, task, truncated=False):
 
                     pos_vec = get_pos_vec_bert(revised_quad, sent)
                     # this is the template used in our proposed GEN-SCL-NAT
-                    one_quad_sent = [ac, "| THE", at, "IS", ot, "|", sp]
+                    one_quad_sent = [ac, "| ASPEK", at, "ADALAH", ot, "|", sp]
 
                     # for the abalation where we sort things, use nat categories, but use the original asqp format
                     if task == 'gen_scl_nat_wo_intra':
