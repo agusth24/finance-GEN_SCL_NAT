@@ -52,7 +52,7 @@ def init_args():
                         help="The name of the task, selected from: [asqp, tasd, aste]")
     parser.add_argument("--dataset", default='rest15', type=str, required=True,
                         help="The name of the dataset, selected from: [rest15, rest16]")
-    parser.add_argument("--data_path", default='#', type=str,
+    parser.add_argument("--data_path", default=None, type=str,
                         help="The folder of the dataset.")
     parser.add_argument("--model_name_or_path", default='t5-small', type=str,
                         help="Path to pre-trained model or shortcut name")
@@ -498,7 +498,8 @@ if __name__ == '__main__':
         train_params = dict(
             default_root_dir=args.output_dir,
             accumulate_grad_batches=args.gradient_accumulation_steps,
-            gpus=args.n_gpu,
+            devices=args.n_gpu,
+            accelerator="gpu",
             gradient_clip_val=1.0,
             max_epochs=args.num_train_epochs,
             auto_lr_find=False,
