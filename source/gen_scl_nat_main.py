@@ -496,7 +496,7 @@ if __name__ == '__main__':
             checkpoint_callback = pl.callbacks.model_checkpoint.ModelCheckpoint(
             dirpath=args.output_dir, monitor='val_loss', mode='min', save_top_k=1
             )
-            callback_list = [checkpoint_callback, LoggingCallback(), EarlyStopping(monitor="val_loss", mode='min', patience=3)]
+            callback_list = [checkpoint_callback, LoggingCallback(), EarlyStopping(monitor="val_loss", mode='min', patience=5)]
         else:
             callback_list = [LoggingCallback()]
 
