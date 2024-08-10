@@ -532,7 +532,7 @@ if __name__ == '__main__':
     if args.do_direct_eval:
         print("\n****** Conduct Evaluating with the last state ******")
 
-        if data_path:
+        if args.data_path:
             sents, _ = read_line_examples_from_file(f'{args.data_path}/test.txt')
         else:
             sents, _ = read_line_examples_from_file(f'data/{args.dataset}/test.txt')
@@ -572,7 +572,7 @@ if __name__ == '__main__':
         cat_model = LinearModel(args.model_name_or_path)
         model = T5FineTuner(args, tfm_model, tokenizer, cont_model, op_model, as_model, cat_model)
 
-        if data_path:
+        if args.data_path:
             sents, _ = read_line_examples_from_file(f'{args.data_path}/test.txt')
         else:
             sents, _ = read_line_examples_from_file(f'data/{args.dataset}/test.txt')
