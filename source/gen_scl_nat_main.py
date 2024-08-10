@@ -551,7 +551,7 @@ if __name__ == '__main__':
             tfm_model = T5ForConditionalGeneration.from_pretrained(model_path)
         elif 'bart' in args.model_name_or_path:
             tokenizer = BartTokenizer.from_pretrained(model_path)
-            tfm_model = BartrConditionalGeneration.from_pretrained(model_path) 
+            tfm_model = BartForConditionalGeneration.from_pretrained(model_path) 
 
         # representations are only used during loss calculation
         cont_model = LinearModel(args.model_name_or_path)
