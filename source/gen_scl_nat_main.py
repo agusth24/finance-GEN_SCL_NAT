@@ -502,7 +502,7 @@ if __name__ == '__main__':
             accelerator="gpu",
             gradient_clip_val=1.0,
             max_epochs=args.num_train_epochs,
-            auto_lr_find=False,
+            # auto_lr_find=False,
             deterministic=True,
             #auto_scale_batch_size=True,
             #callbacks=[checkpoint_callback, EarlyStopping(monitor="val_loss", mode='min'), LoggingCallback()],
