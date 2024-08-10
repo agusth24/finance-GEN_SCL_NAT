@@ -183,6 +183,8 @@ class T5FineTuner(pl.LightningModule):
         self.as_model = as_model
         self.cat_model = cat_model
         self.tokenizer = tokenizer
+        self.training_step_outputs = []
+        self.validation_step_outputs = []
 
     def is_logger(self):
         return True
@@ -283,23 +285,27 @@ class T5FineTuner(pl.LightningModule):
 
     def training_step(self, batch, batch_idx):
         loss, _ = self._step(batch)
+        self.training_step_outputs.append(loss)
         self.log("train_loss", loss)
         return {"loss": loss}
 
-    def on_training_epoch_end(self, outputs):
-        avg_train_loss = torch.stack([x["loss"] for x in outputs]).mean()
+    def on_training_epoch_end(self):
+        avg_train_loss = torch.stack(self.training_step_outputs).mean()
         tensorboard_logs = {"avg_train_loss": avg_train_loss}
         self.log('avg_train_loss', avg_train_loss)
+        self.training_step_outputs.clear()
 
     def validation_step(self, batch, batch_idx):
         loss, pred_outputs = self._step(batch)
+        self.validation_step_outputs.append(loss)
         self.log('val_batch_loss', loss)
         return {"val_batch_loss": loss}
         
-    def on_validation_epoch_end(self, outputs):
-        avg_loss = torch.stack([x["val_batch_loss"] for x in outputs]).mean()
+    def on_validation_epoch_end(self):
+        avg_loss = torch.stack(self.validation_step_outputs).mean()
         print("val_loss:\t", avg_loss )
-        self.log('val_loss', avg_loss)
+        self.log('val_loss', avg_loss)        
+        self.validation_step_outputs.clear()
 
     def configure_optimizers(self):
         """ Prepare optimizer and schedule (linear warmup and decay) """
