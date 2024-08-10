@@ -52,6 +52,8 @@ def init_args():
                         help="The name of the task, selected from: [asqp, tasd, aste]")
     parser.add_argument("--dataset", default='rest15', type=str, required=True,
                         help="The name of the dataset, selected from: [rest15, rest16]")
+    parser.add_argument("--data_path", default='#', type=str,
+                        help="The folder of the dataset.")
     parser.add_argument("--model_name_or_path", default='t5-small', type=str,
                         help="Path to pre-trained model or shortcut name")
     parser.add_argument("--do_train", action='store_true',
@@ -129,7 +131,7 @@ def init_args():
     return args
 
 def get_dataset(tokenizer, type_path, args):
-    return GenSCLNatDataset(tokenizer=tokenizer, data_dir=args.dataset, 
+    return GenSCLNatDataset(tokenizer=tokenizer, data_dir=args.dataset, data_path=args.data_path, 
                        data_type=type_path, max_len=args.max_seq_length, task=args.task, truncate=args.truncate)
 
 """
@@ -450,7 +452,7 @@ if __name__ == '__main__':
     tokenizer.add_tokens(['[SSEP]'])
     
     # Get example from the train set
-    dataset = GenSCLNatDataset(tokenizer=tokenizer, data_dir=args.dataset, 
+    dataset = GenSCLNatDataset(tokenizer=tokenizer, data_dir=args.dataset, data_path=args.data_path, 
                         data_type='train', max_len=args.max_seq_length, task=args.task, truncate=args.truncate)
     data_sample = dataset[0]
 
@@ -526,7 +528,7 @@ if __name__ == '__main__':
         sents, _ = read_line_examples_from_file(f'data/{args.dataset}/test.txt')
 
         print()
-        test_dataset = GenSCLNatDataset(tokenizer, data_dir=args.dataset, 
+        test_dataset = GenSCLNatDataset(tokenizer, data_dir=args.dataset, data_path=args.data_path, 
                                 data_type='test', max_len=args.max_seq_length, task=args.task, truncate=args.truncate)
         test_loader = DataLoader(test_dataset, args.eval_batch_size, num_workers=4)
 
@@ -563,7 +565,7 @@ if __name__ == '__main__':
         sents, _ = read_line_examples_from_file(f'data/{args.dataset}/test.txt')
 
         print()
-        test_dataset = GenSCLNatDataset(tokenizer, data_dir=args.dataset, 
+        test_dataset = GenSCLNatDataset(tokenizer, data_dir=args.dataset, data_path=args.data_path, 
                                 data_type='test', max_len=args.max_seq_length, task=args.task, truncate=args.truncate)
         test_loader = DataLoader(test_dataset, batch_size=args.eval_batch_size, num_workers=4)
 
