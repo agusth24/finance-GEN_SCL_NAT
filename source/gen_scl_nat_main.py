@@ -286,7 +286,7 @@ class T5FineTuner(pl.LightningModule):
         self.log("train_loss", loss)
         return {"loss": loss}
 
-    def training_epoch_end(self, outputs):
+    def on_training_epoch_end(self, outputs):
         avg_train_loss = torch.stack([x["loss"] for x in outputs]).mean()
         tensorboard_logs = {"avg_train_loss": avg_train_loss}
         self.log('avg_train_loss', avg_train_loss)
@@ -296,7 +296,7 @@ class T5FineTuner(pl.LightningModule):
         self.log('val_batch_loss', loss)
         return {"val_batch_loss": loss}
         
-    def validation_epoch_end(self, outputs):
+    def on_validation_epoch_end(self, outputs):
         avg_loss = torch.stack([x["val_batch_loss"] for x in outputs]).mean()
         print("val_loss:\t", avg_loss )
         self.log('val_loss', avg_loss)
