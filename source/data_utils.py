@@ -75,7 +75,7 @@ class ABSADataset(Dataset):
     def __init__(self, tokenizer, data_dir, data_type, task, max_len=256, data_path=None, truncate=False):
         # './data/rest16/train.txt'
         if data_path:
-            self.data_path = data_path
+            self.data_path = f'data_path/{data_type}.txt'
         else:
             self.data_path = f'data/{data_dir}/{data_type}.txt'
         self.max_len = max_len
